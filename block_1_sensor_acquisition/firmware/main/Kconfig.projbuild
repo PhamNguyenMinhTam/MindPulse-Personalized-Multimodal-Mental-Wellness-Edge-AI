@@ -1,0 +1,70 @@
+menu "MindPulse sensor acquisition"
+
+config MINDPULSE_VOICE_RATE_HZ
+	int "INMP441 sample rate (Hz)"
+	range 8000 48000
+	default 16000
+
+choice MINDPULSE_PPG_RATE
+	prompt "MAX30102 sample rate"
+	default MINDPULSE_PPG_RATE_100
+
+config MINDPULSE_PPG_RATE_50
+	bool "50 Hz"
+
+config MINDPULSE_PPG_RATE_100
+	bool "100 Hz"
+
+config MINDPULSE_PPG_RATE_200
+	bool "200 Hz"
+
+config MINDPULSE_PPG_RATE_400
+	bool "400 Hz"
+endchoice
+
+config MINDPULSE_PPG_RATE_HZ
+	int
+	default 50 if MINDPULSE_PPG_RATE_50
+	default 100 if MINDPULSE_PPG_RATE_100
+	default 200 if MINDPULSE_PPG_RATE_200
+	default 400 if MINDPULSE_PPG_RATE_400
+
+config MINDPULSE_I2S_BCLK_GPIO
+	int "INMP441 I2S BCLK GPIO"
+	default -1
+
+config MINDPULSE_I2S_WS_GPIO
+	int "INMP441 I2S WS/LRCLK GPIO"
+	default -1
+
+config MINDPULSE_I2S_DATA_GPIO
+	int "INMP441 I2S data GPIO"
+	default -1
+
+config MINDPULSE_I2C_SDA_GPIO
+	int "MAX30102 I2C SDA GPIO"
+	default -1
+
+config MINDPULSE_I2C_SCL_GPIO
+	int "MAX30102 I2C SCL GPIO"
+	default -1
+
+config MINDPULSE_UART_TX_GPIO
+	int "Binary transport UART TX GPIO"
+	default -1
+
+config MINDPULSE_UART_RX_GPIO
+	int "Binary transport UART RX GPIO"
+	default -1
+
+config MINDPULSE_UART_NUM
+	int "Binary transport UART controller"
+	range 1 2
+	default 1
+
+config MINDPULSE_UART_BAUD
+	int "Binary transport baud rate"
+	range 115200 2000000
+	default 921600
+
+endmenu
