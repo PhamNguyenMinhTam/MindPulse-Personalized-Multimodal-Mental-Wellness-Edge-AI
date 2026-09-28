@@ -1,7 +1,7 @@
 import pytest
 
 from project.adapters.mock import MockProducerAAdapter, MockProducerBAdapter, MockProducerCAdapter
-from project.data.models import CanonicalSignal, Modality, SignalUnit
+from project.data.models import DevicePacket, Modality, SignalUnit
 from project.ingestion.pipeline import IngestionPipeline
 
 
@@ -13,9 +13,15 @@ def test_pipeline_accepts_each_native_format_and_returns_canonical_signal() -> N
         (MockProducerCAdapter(Modality.VOICE, SignalUnit.ARBITRARY_UNIT), {"period_ms": 10, "signal": [10, 20]}),
     ]
 
-    outputs = [pipeline.ingest(packet, adapter) for adapter, packet in cases]
+    metadata = {
+        "device_id": "mock-device",
+        "session_id": "session-1",
+        "sequence_id": 0,
+        "timestamp": "2026-09-28T12:00:00Z",
+    }
+    outputs = [pipeline.ingest(packet, adapter, **metadata) for adapter, packet in cases]
 
-    assert all(isinstance(output, CanonicalSignal) for output in outputs)
+    assert all(isinstance(output, DevicePacket) for output in outputs)
     assert outputs[0] == outputs[1] == outputs[2]
 
 
@@ -31,4 +37,11 @@ def test_invalid_data_fails_during_ingestion_before_downstream(adapter: object, 
     pipeline = IngestionPipeline()
 
     with pytest.raises((TypeError, ValueError), match=message):
-        pipeline.ingest(packet, adapter)  # type: ignore[arg-type]
+        pipeline.ingest(
+            packet,
+            adapter,  # type: ignore[arg-type]
+            device_id="mock-device",
+            session_id="session-1",
+            sequence_id=0,
+            timestamp="2026-09-28T12:00:00Z",
+        )
