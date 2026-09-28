@@ -1,0 +1,1 @@
+"""Adapters that translate producer-native packets into canonical fields."""
